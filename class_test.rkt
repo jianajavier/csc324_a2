@@ -4,7 +4,7 @@
 
 ; Comment out tests to avoid "bad syntax" errors when working
 ; on the assignment.
-#|
+
 ; Traits for testing
 (define (distance-trait obj)
   (lambda (msg)
@@ -101,4 +101,4 @@
 (test (let ([p (A-meta 1 2 3)])
         (map first (p "_methods")))
       '("black" "white"))
-|#
+
