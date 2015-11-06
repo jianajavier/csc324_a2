@@ -45,8 +45,41 @@ extending the functionality of the backtracking library.
 > (next)
 "false."
 |#
-(define subsets (void))
 
+(define (add-to-all lst item)
+  (if (empty? lst)
+      empty
+      (cons (add-to-all-helper (first lst) item)
+            (add-to-all (rest lst) item))))
+
+(define (add-to-all-helper lst item)
+  (cons item lst))
+
+(define (subsets-old lst)
+  (if (empty? lst)
+      (list empty)
+      (remove-duplicates
+       (append (subsets-old (rest lst))
+               (add-to-all (append (subset-help (rest lst)) (list (rest lst)))
+                           (first lst))))))
+
+(define (subset-help lst)
+  (if (empty? lst)
+      (list empty)
+      (cons (list (first lst)) (subset-help (rest lst)))))
+
+(define (subsets lst)
+  (let ([subset-lst (subsets-old lst)])
+    (eval (cons (quote -<) (help subset-lst)))))
+
+(define (help lst)
+  (if (empty? lst)
+      empty
+  (cons `',(first lst) (help (rest lst)))))
+
+; (subsets '(1 2))
+; THIS ONLY WORKS IN THE INTERACTIVE PANE!!!!
+; Try not to use eval.. Don't know how to do it for now
 
 ; QUESTION 4
 #|
