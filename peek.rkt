@@ -28,6 +28,9 @@ We strongly recommend not changing this file.
      (let/cc cont
        ; Push a new choice onto choices.
        (add-choice! (lambda () (cont (-< <expr2> ...))))
+       ; ADDED 
+;----------------------------------------------------------------------------    
+       ; Push quoted choice onto choices-2.
        (add-choice-2! (lambda () (quasiquote (-< (unquote-splicing (list <expr2> ...))))))
        <expr1>)]))
 
@@ -55,8 +58,9 @@ We strongly recommend not changing this file.
       ; What's the difference?
       ((get-choice!))))
 
-
 #|
+ADDED
+----------------------------------------------------------------------------
 (peek)
 
   Returns a quote representation of the choices stored on the
@@ -88,6 +92,7 @@ We strongly recommend not changing this file.
       ; What's the difference?
       ((get-choice-2!))))
 
+;----------------------------------------------------------------------------
 
 #|
 (all <expr>)
@@ -161,6 +166,13 @@ We strongly recommend not changing this file.
     (set! choices (rest choices))
     choice))
 
+; ADDED
+;----------------------------------------------------------------------------
+
+;------------------------------------------------------------------------------
+; Second stack storing quoted choices.
+;------------------------------------------------------------------------------
+
 (define choices-2 '())
 
 ; "Push": add a choice to the choices stack.
@@ -175,3 +187,5 @@ We strongly recommend not changing this file.
   (let ([choice (first choices-2)])
     (set! choices-2 (rest choices-2))
     choice))
+
+;----------------------------------------------------------------------------

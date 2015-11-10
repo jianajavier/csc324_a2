@@ -68,9 +68,6 @@ extending the functionality of the backtracking library.
       (list empty)
       (cons (list (first lst)) (subset-help (rest lst)))))
 
-; want to change the subset function to be something shorter
-; this works but i don't really get why
-
 (define (subsets lst)
   (rec-helper (subsets-old lst)))
 
@@ -78,8 +75,6 @@ extending the functionality of the backtracking library.
   (if (equal? (length lst) 1)
       (-< (first lst))
   (-< (first lst) (rec-helper (rest lst)))))
-
-;(subsets '(1 2))
 
 ; QUESTION 5
 #|
@@ -94,33 +89,31 @@ extending the functionality of the backtracking library.
   is just to correctly express the constraints, and let the computer
   do the work.
 
-  (define grid1
-  '((1 2 3 4)
-    ("" "" 1 "")
-    ("" "" 2 3)
-    (2 "" "" 1)))
-
 |#
 (define (sudoku-4 lst)
   (?- constraints
       (?- (stronger-combo lst)
           (list
-           (?- (combo lst) (list (-< 1 2 3 4)
-                           (-< 1 2 3 4)
-                           (-< 1 2 3 4)
-                           (-< 1 2 3 4)))
-           (?- (combo lst) (list (-< 1 2 3 4)
-                           (-< 1 2 3 4)
-                           (-< 1 2 3 4)
-                           (-< 1 2 3 4)))
-           (?- (combo lst) (list (-< 1 2 3 4)
-                           (-< 1 2 3 4)
-                           (-< 1 2 3 4)
-                           (-< 1 2 3 4)))
-           (?- (combo lst) (list (-< 1 2 3 4)
-                           (-< 1 2 3 4)
-                           (-< 1 2 3 4)
-                           (-< 1 2 3 4)))))))
+           (?- (combo lst) (list
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)))
+           (?- (combo lst) (list
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)))
+           (?- (combo lst) (list
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)))
+           (?- (combo lst) (list
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)
+                            (-< 1 2 3 4)))))))
 
 (define (constraints lst)
   (if (not (list? lst))
