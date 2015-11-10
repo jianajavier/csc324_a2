@@ -12,7 +12,7 @@ extending the functionality of the backtracking library.
 ; Export functions for testing. Please don't change this line!
 (provide subsets sudoku-4 fold-<)
 
-; QUESTION 3
+; QUESTION 4
 #|
 (subsets lst)
   lst: a list
@@ -68,20 +68,20 @@ extending the functionality of the backtracking library.
       (list empty)
       (cons (list (first lst)) (subset-help (rest lst)))))
 
+; want to change the subset function to be something shorter
+; this works but i don't really get why
+
 (define (subsets lst)
-  (let ([subset-lst (subsets-old lst)])
-    (eval (cons (quote -<) (help subset-lst)))))
+  (rec-helper (subsets-old lst)))
 
-(define (help lst)
-  (if (empty? lst)
-      empty
-  (cons `',(first lst) (help (rest lst)))))
+(define (rec-helper lst)
+  (if (equal? (length lst) 1)
+      (-< (first lst))
+  (-< (first lst) (rec-helper (rest lst)))))
 
-; (subsets '(1 2))
-; THIS ONLY WORKS IN THE INTERACTIVE PANE!!!!
-; Try not to use eval.. Don't know how to do it for now
+;(subsets '(1 2))
 
-; QUESTION 4
+; QUESTION 5
 #|
 (sudoku-4 puzzle)
   puzzle: a nested list representing a 4-by-4 Sudoku puzzle
@@ -93,11 +93,109 @@ extending the functionality of the backtracking library.
   Hint: use the ?- function in your solution. Again, your main task
   is just to correctly express the constraints, and let the computer
   do the work.
+
+  (define grid1
+  '((1 2 3 4)
+    ("" "" 1 "")
+    ("" "" 2 3)
+    (2 "" "" 1)))
+
 |#
-(define sudoku-4 (void))
+(define (sudoku-4 lst)
+  (?- constraints
+      (?- (stronger-combo lst)
+          (list
+           (?- (combo lst) (list (-< 1 2 3 4)
+                           (-< 1 2 3 4)
+                           (-< 1 2 3 4)
+                           (-< 1 2 3 4)))
+           (?- (combo lst) (list (-< 1 2 3 4)
+                           (-< 1 2 3 4)
+                           (-< 1 2 3 4)
+                           (-< 1 2 3 4)))
+           (?- (combo lst) (list (-< 1 2 3 4)
+                           (-< 1 2 3 4)
+                           (-< 1 2 3 4)
+                           (-< 1 2 3 4)))
+           (?- (combo lst) (list (-< 1 2 3 4)
+                           (-< 1 2 3 4)
+                           (-< 1 2 3 4)
+                           (-< 1 2 3 4)))))))
 
+(define (constraints lst)
+  (if (not (list? lst))
+      #f
+      (let* ([firstrow (first lst)]
+             [secondrow (second lst)]
+             [thirdrow (third lst)]
+             [fourthrow (fourth lst)]
+             [firstcolumn (list (first firstrow) (first secondrow) (first thirdrow) (first fourthrow))]
+             [secondcolumn (list (second firstrow) (second secondrow) (second thirdrow) (second fourthrow))]
+             [thirdcolumn (list (third firstrow) (third secondrow) (third thirdrow) (third fourthrow))]
+             [fourthcolumn (list (fourth firstrow) (fourth secondrow) (fourth thirdrow) (fourth fourthrow))]
+             [firstquarter (list (first firstrow) (second firstrow) (first secondrow) (second secondrow))]
+             [secondquarter (list (third firstrow) (fourth firstrow) (third secondrow) (fourth secondrow))]
+             [thirdquarter (list (first thirdrow) (second thirdrow) (first fourthrow) (second fourthrow))]
+             [fourthquarter (list (third thirdrow) (fourth thirdrow) (third fourthrow) (fourth fourthrow))]
+             )
+        (and (no-duplicates firstrow)
+             (no-duplicates secondrow)
+             (no-duplicates thirdrow)
+             (no-duplicates fourthrow)
+             (no-duplicates firstcolumn)
+             (no-duplicates secondcolumn)
+             (no-duplicates thirdcolumn)
+             (no-duplicates fourthcolumn)
+             (no-duplicates firstquarter)
+             (no-duplicates secondquarter)
+             (no-duplicates thirdquarter)
+             (no-duplicates fourthquarter)))))
 
-; QUESTION 5
+(define (stronger-combo question)
+  (lambda (lst)
+    (and (no-duplicates lst)
+         (find-same-structure-list question lst))))
+
+(define (combo question)
+  (lambda (lst)
+    (and (no-duplicates lst)
+         (find-same-structure
+          (rec-helper question)
+          lst))))
+
+(define (find-same-structure-list solve lst2)
+        (and (find-same-structure (first solve) (first lst2))
+             (find-same-structure (second solve) (second lst2))
+             (find-same-structure (third solve) (third lst2))
+             (find-same-structure (fourth solve) (fourth lst2))))
+
+(define (no-duplicates lst)
+  (equal? (length (set->list (list->set lst))) (length lst)))
+
+(define (find-same-structure lst1 lst2)
+  (let ([value-count (find-values lst1)])
+    (equal? (structure-help lst1 lst2) value-count)))
+
+(define (structure-help lst1 lst2)
+  (if (not (list? lst2))
+      0
+      (if (empty? lst1)
+          0
+          (if (equal? (first lst1) "")
+              (structure-help (rest lst1) (rest lst2))
+              (if (equal? (first lst1) (first lst2))
+                  (+ 1 (structure-help (rest lst1) (rest lst2)))
+                  (structure-help (rest lst1) (rest lst2)))))))
+  
+
+(define (find-values lst)
+  (if (empty? lst)
+      0
+      (if (not (equal? (first lst) ""))
+          (+ 1 (find-values (rest lst)))
+          (find-values (rest lst)))))
+
+; QUESTION 6
 #|
 (fold-< combine init expr)
   combine: a binary function
@@ -110,7 +208,12 @@ extending the functionality of the backtracking library.
   Note that the order of <combine>'s parameters is the same as foldl:
     1) The value of the next choice
     2) The value of <init>
+
+ > (fold-< max 0 (sin (* (-< 1 2 3 4) (+ (-< 100 200) (-< 1 2)))))
+ 0.9948267913584064
+
 |#
 (define-syntax fold-<
   (syntax-rules ()
-    ))
+    [(fold-< combine init expr)
+     (foldl combine init (all expr))]))
