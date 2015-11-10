@@ -1,5 +1,7 @@
 #lang racket
 
+; TODO: NEED TO ADD DOCUMENTATION AND TEST
+
 (define-syntax class
   (syntax-rules (class def __init__ self :)
     [(class <Class>
