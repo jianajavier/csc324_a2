@@ -88,9 +88,7 @@ ADDED
   ; Check if there are any remaining choices
   (if (empty? choices-2)
       "false."
-      ; Notice that it's ((get-choice!)) and not (get-choice!).
-      ; What's the difference?
-      ((get-choice-2!))))
+      ((get-choice-no-pop!)))) ; Gets choice but does not pop it so will get same choice if (next) was not called
 
 ;----------------------------------------------------------------------------
 
@@ -164,6 +162,7 @@ ADDED
 (define (get-choice!)
   (let ([choice (first choices)])
     (set! choices (rest choices))
+    ((get-choice-2!)) ; ADDED so that quoted list of choices will pop as well to change next call to (peek)
     choice))
 
 ; ADDED
@@ -186,6 +185,11 @@ ADDED
 (define (get-choice-2!)
   (let ([choice (first choices-2)])
     (set! choices-2 (rest choices-2))
+    choice))
+
+; Used when (peek) is called as to not modiy the quoted list of choices until (next) is called
+(define (get-choice-no-pop!)
+  (let ([choice (first choices-2)])
     choice))
 
 ;----------------------------------------------------------------------------

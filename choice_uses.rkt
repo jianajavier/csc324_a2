@@ -46,6 +46,8 @@ extending the functionality of the backtracking library.
 "false."
 |#
 
+; These 4 functions are taken from Lab 1 to find the list of subsets
+; ------------------------------------------------------------------------------------
 (define (add-to-all lst item)
   (if (empty? lst)
       empty
@@ -67,10 +69,12 @@ extending the functionality of the backtracking library.
   (if (empty? lst)
       (list empty)
       (cons (list (first lst)) (subset-help (rest lst)))))
+; ------------------------------------------------------------------------------------
 
 (define (subsets lst)
   (rec-helper (subsets-old lst)))
 
+; This function helps take a list and pass the elements as arguments to -<
 (define (rec-helper lst)
   (if (equal? (length lst) 1)
       (-< (first lst))
@@ -115,6 +119,9 @@ extending the functionality of the backtracking library.
                             (-< 1 2 3 4)
                             (-< 1 2 3 4)))))))
 
+; Possible answers with correct structure are passed through here to check
+; if they satisfy the constraints of the sudoku (distinct rows, columns, quarters)
+
 (define (constraints lst)
   (if (not (list? lst))
       #f
@@ -144,11 +151,13 @@ extending the functionality of the backtracking library.
              (no-duplicates thirdquarter)
              (no-duplicates fourthquarter)))))
 
+; Combines no duplicate and same structure constraint for entire sudoku board
 (define (stronger-combo question)
   (lambda (lst)
     (and (no-duplicates lst)
          (find-same-structure-list question lst))))
 
+; Combines both constraints of no duplicates and the same structure
 (define (combo question)
   (lambda (lst)
     (and (no-duplicates lst)
@@ -156,15 +165,19 @@ extending the functionality of the backtracking library.
           (rec-helper question)
           lst))))
 
+; Compares two lists that contain 4 lists with 4 elements to check structure
+; of entire sudoku board
 (define (find-same-structure-list solve lst2)
         (and (find-same-structure (first solve) (first lst2))
              (find-same-structure (second solve) (second lst2))
              (find-same-structure (third solve) (third lst2))
              (find-same-structure (fourth solve) (fourth lst2))))
 
+; Turns a list into a set to check if there are any duplicates
 (define (no-duplicates lst)
   (equal? (length (set->list (list->set lst))) (length lst)))
 
+; Compares two lists that consist of 4 elements for the same structure
 (define (find-same-structure lst1 lst2)
   (let ([value-count (find-values lst1)])
     (equal? (structure-help lst1 lst2) value-count)))
@@ -179,8 +192,9 @@ extending the functionality of the backtracking library.
               (if (equal? (first lst1) (first lst2))
                   (+ 1 (structure-help (rest lst1) (rest lst2)))
                   (structure-help (rest lst1) (rest lst2)))))))
-  
 
+; Used in find-same-structure to help determine how many values are given
+; in order to make sure it matches the structure
 (define (find-values lst)
   (if (empty? lst)
       0

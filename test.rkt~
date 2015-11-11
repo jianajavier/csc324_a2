@@ -1,0 +1,7 @@
+#lang racket
+(define (insert lst val) (if (empty? lst)
+      (list val)
+      (-< (cons val lst)
+          (cons (first lst)
+                (insert (rest lst) val)))))
+
